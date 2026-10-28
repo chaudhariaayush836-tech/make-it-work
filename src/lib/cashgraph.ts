@@ -72,7 +72,7 @@ export const borrowers: Borrower[] = [
     loan: 35,
     months: series(
       { inflow: 28, outflow: 23, balance: 22, receivables: 14, overdueReceivables: 2, obligations: 3, topCustomerShare: 0.28 },
-      { inflow: -0.015, balance: -0.05, overdueReceivables: 0.14 },
+      { inflow: -0.012, balance: -0.05, overdueReceivables: 0.06 },
     ),
   },
   {
@@ -116,7 +116,7 @@ export const borrowers: Borrower[] = [
     loan: 25,
     months: series(
       { inflow: 20, outflow: 16.5, balance: 9, receivables: 10, overdueReceivables: 1.5, obligations: 2.2, topCustomerShare: 0.5 },
-      { inflow: -0.02, balance: -0.06, topCustomerShare: 0.04 },
+      { inflow: -0.008, balance: -0.03, topCustomerShare: 0.04 },
     ),
   },
 ];
