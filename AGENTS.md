@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Risk engine lives in src/lib/cashgraph.ts as pure functions with tests beside it, so rules stay testable and swappable for real data later.
