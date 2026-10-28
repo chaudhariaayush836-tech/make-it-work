@@ -203,7 +203,7 @@ export function assess(b: Borrower): Assessment {
   const explanation =
     hit.length === 0
       ? "No meaningful deterioration detected over the last 6 months."
-      : `${hit.map((h) => h.label.toLowerCase()).join(" + ")} changing together over the last 6 months.`;
+      : `${hit.map((h, i) => (i === 0 ? h.label : h.label.toLowerCase())).join(" + ")} changing together over the last 6 months.`;
   const action =
     level === "high"
       ? "Prioritise human credit review this week."
