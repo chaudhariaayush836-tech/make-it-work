@@ -21,3 +21,23 @@ describe("risk engine", () => {
     expect(assess(borrowers.find((b) => b.id === "apex-components")!).level).toBe("high");
   });
 });
+
+import { parseCsv, sampleCsv, roi } from "./cashgraph";
+describe("csv import", () => {
+  it("round-trips the sample file into 6 borrowers", () => {
+    const r = parseCsv(sampleCsv());
+    expect(r.errors).toEqual([]);
+    expect(r.borrowers).toHaveLength(6);
+  });
+  it("rejects borrowers with fewer than 4 months", () => {
+    const csv = sampleCsv().split("\n").slice(0, 4).join("\n");
+    expect(parseCsv(csv).borrowers).toHaveLength(0);
+  });
+});
+describe("roi", () => {
+  it("5,000 borrowers at ₹100/month + ₹5L platform costs ₹65L a year", () => {
+    const r = roi({ borrowers: 5000, feePerBorrower: 100, platformFeeYear: 500000, avgLoanLakh: 30, defaultRate: 0.04, earlyCatchRate: 0.4, lossReduction: 0.3 });
+    expect(r.costYear).toBe(6500000);
+    expect(r.savedYear).toBe(72000000);
+  });
+});
