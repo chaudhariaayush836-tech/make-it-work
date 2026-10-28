@@ -60,7 +60,7 @@ export const borrowers: Borrower[] = [
     city: "Pune",
     loan: 50,
     months: series(
-      { inflow: 42, outflow: 38, balance: 30, receivables: 20, overdueReceivables: 3, obligations: 4.5, topCustomerShare: 0.32 },
+      { inflow: 42, outflow: 35, balance: 30, receivables: 20, overdueReceivables: 3, obligations: 4.5, topCustomerShare: 0.32 },
       { inflow: -0.06, outflow: 0.01, balance: -0.16, receivables: 0.08, overdueReceivables: 0.22, topCustomerShare: 0.07 },
     ),
   },
@@ -71,8 +71,8 @@ export const borrowers: Borrower[] = [
     city: "Surat",
     loan: 35,
     months: series(
-      { inflow: 28, outflow: 25, balance: 22, receivables: 14, overdueReceivables: 2, obligations: 3, topCustomerShare: 0.28 },
-      { inflow: -0.025, balance: -0.07, overdueReceivables: 0.14 },
+      { inflow: 28, outflow: 23, balance: 22, receivables: 14, overdueReceivables: 2, obligations: 3, topCustomerShare: 0.28 },
+      { inflow: -0.015, balance: -0.05, overdueReceivables: 0.14 },
     ),
   },
   {
@@ -82,7 +82,7 @@ export const borrowers: Borrower[] = [
     city: "Indore",
     loan: 80,
     months: series(
-      { inflow: 65, outflow: 58, balance: 48, receivables: 26, overdueReceivables: 2.5, obligations: 6, topCustomerShare: 0.18 },
+      { inflow: 65, outflow: 52, balance: 48, receivables: 26, overdueReceivables: 2.5, obligations: 6, topCustomerShare: 0.18 },
       { inflow: 0.02, outflow: 0.015, balance: 0.02 },
     ),
   },
@@ -93,7 +93,7 @@ export const borrowers: Borrower[] = [
     city: "Chennai",
     loan: 120,
     months: series(
-      { inflow: 90, outflow: 86, balance: 40, receivables: 45, overdueReceivables: 6, obligations: 11, topCustomerShare: 0.41 },
+      { inflow: 90, outflow: 76, balance: 40, receivables: 45, overdueReceivables: 6, obligations: 11, topCustomerShare: 0.41 },
       { inflow: -0.05, outflow: 0.01, balance: -0.2, overdueReceivables: 0.18, topCustomerShare: 0.05 },
     ),
   },
@@ -104,7 +104,7 @@ export const borrowers: Borrower[] = [
     city: "Ahmedabad",
     loan: 60,
     months: series(
-      { inflow: 50, outflow: 44, balance: 35, receivables: 22, overdueReceivables: 2, obligations: 5, topCustomerShare: 0.22 },
+      { inflow: 50, outflow: 42, balance: 35, receivables: 22, overdueReceivables: 2, obligations: 5, topCustomerShare: 0.22 },
       { inflow: 0.01, receivables: 0.03 },
     ),
   },
@@ -115,7 +115,7 @@ export const borrowers: Borrower[] = [
     city: "Ludhiana",
     loan: 25,
     months: series(
-      { inflow: 20, outflow: 18, balance: 9, receivables: 10, overdueReceivables: 1.5, obligations: 2.2, topCustomerShare: 0.5 },
+      { inflow: 20, outflow: 16.5, balance: 9, receivables: 10, overdueReceivables: 1.5, obligations: 2.2, topCustomerShare: 0.5 },
       { inflow: -0.02, balance: -0.06, topCustomerShare: 0.04 },
     ),
   },
@@ -140,16 +140,16 @@ export function assess(b: Borrower): Assessment {
   const overdueShareNow = latest.overdueReceivables / latest.receivables;
   const overdueShareStart = start.overdueReceivables / start.receivables;
   const balanceChange = pct(latest.balance, start.balance);
-  const monthlyBurn = latest.outflow + latest.obligations;
+  const monthlyBurn = latest.obligations + Math.max(0, -net(latest));
   const runwayMonths = latest.balance / monthlyBurn;
-  const dscr = Math.max(net(latest), 0) / latest.obligations + 0; // net cash / obligations
+  const dscr = Math.max(net(latest), 0) / latest.obligations; // operating cash (pre-debt) / obligations
   const concentrationUp = latest.topCustomerShare - start.topCustomerShare;
 
   const signals: Signal[] = [
     {
       key: "cashflow",
       label: "Operating cash flow",
-      value: `${cfChange >= 0 ? "+" : ""}${(cfChange * 100).toFixed(0)}%`,
+      value: cfChange < -1 ? "Turned negative" : `${cfChange >= 0 ? "+" : ""}${(cfChange * 100).toFixed(0)}%`,
       triggered: cfChange < -0.2,
       detail: "Avg net cash flow, last 3 vs first 3 months. Triggers below −20%.",
     },
@@ -165,7 +165,7 @@ export function assess(b: Borrower): Assessment {
       label: "Liquidity runway",
       value: `${runwayMonths.toFixed(1)} months`,
       triggered: runwayMonths < 1,
-      detail: "Closing balance ÷ (outflow + debt service). Triggers under 1 month.",
+      detail: "Closing balance ÷ (debt service + any operating cash burn). Triggers under 1 month.",
     },
     {
       key: "balance",
@@ -186,7 +186,7 @@ export function assess(b: Borrower): Assessment {
       label: "Debt coverage",
       value: `${dscr.toFixed(2)}×`,
       triggered: dscr < 1.2,
-      detail: "Latest net cash flow ÷ monthly obligations. Triggers under 1.2×.",
+      detail: "Latest operating cash flow ÷ monthly debt service. Triggers under 1.2×.",
     },
   ];
 
