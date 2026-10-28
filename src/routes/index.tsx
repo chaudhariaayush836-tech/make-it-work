@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { assess, borrowers } from "@/lib/cashgraph";
+import { assess } from "@/lib/cashgraph";
+import { usePortfolio } from "@/lib/portfolio-store";
 import { Header, RiskBadge } from "@/components/RiskBadge";
 
 export const Route = createFileRoute("/")({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { borrowers, isSample, decisions } = usePortfolio();
   const rows = borrowers
     .map((b) => ({ b, a: assess(b) }))
     .sort((x, y) => y.a.score - x.a.score);
@@ -31,6 +33,11 @@ function Index() {
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Borrowers ranked by how many risk signals are changing together. The credit team makes the final call.
         </p>
+        {isSample && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            Showing sample data. <Link to="/upload" className="text-foreground underline">Upload a lender's data</Link> to run a pilot.
+          </p>
+        )}
 
         <div className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border md:grid-cols-4">
           {[
@@ -64,7 +71,10 @@ function Index() {
                     <Link to="/borrower/$id" params={{ id: b.id }} className="font-medium hover:underline">
                       {b.name}
                     </Link>
-                    <div className="text-xs text-muted-foreground">{b.sector} · {b.city}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {b.sector} · {b.city}
+                      {decisions[b.id]?.length ? ` · Reviewed: ${decisions[b.id][0].action}` : ""}
+                    </div>
                   </td>
                   <td className="px-4 py-4"><RiskBadge level={a.level} /></td>
                   <td className="px-4 py-4 text-right font-mono">{a.score}</td>

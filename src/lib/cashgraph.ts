@@ -213,3 +213,68 @@ export function assess(b: Borrower): Assessment {
 
   return { score, level, signals, explanation, action };
 }
+
+// ---------- CSV import (pilot data) ----------
+export const CSV_HEADER =
+  "borrower_id,name,sector,city,loan_lakh,month,inflow,outflow,balance,receivables,overdue_receivables,obligations,top_customer_share";
+
+export function parseCsv(text: string): { borrowers: Borrower[]; errors: string[] } {
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  const errors: string[] = [];
+  if (lines.length < 2) return { borrowers: [], errors: ["File has no data rows."] };
+  const head = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const need = CSV_HEADER.split(",");
+  const missing = need.filter((n) => !head.includes(n));
+  if (missing.length) return { borrowers: [], errors: [`Missing columns: ${missing.join(", ")}`] };
+  const idx = (k: string) => head.indexOf(k);
+  const map = new Map<string, Borrower>();
+  lines.slice(1).forEach((line, i) => {
+    const c = line.split(",").map((x) => x.trim());
+    const num = (k: string) => Number(c[idx(k)]);
+    const nums = need.slice(6).map(num);
+    if (nums.some((n) => !Number.isFinite(n)) || !Number.isFinite(num("loan_lakh"))) {
+      errors.push(`Row ${i + 2}: a number is missing or invalid.`);
+      return;
+    }
+    const id = c[idx("borrower_id")];
+    if (!map.has(id))
+      map.set(id, { id, name: c[idx("name")] || id, sector: c[idx("sector")], city: c[idx("city")], loan: num("loan_lakh"), months: [] });
+    map.get(id)!.months.push({
+      month: c[idx("month")], inflow: nums[0], outflow: nums[1], balance: nums[2], receivables: nums[3],
+      overdueReceivables: nums[4], obligations: nums[5], topCustomerShare: nums[6] > 1 ? nums[6] / 100 : nums[6],
+    });
+  });
+  const out: Borrower[] = [];
+  map.forEach((b) => {
+    if (b.months.length < 4) errors.push(`${b.name}: needs at least 4 months of data (has ${b.months.length}).`);
+    else out.push(b);
+  });
+  return { borrowers: out, errors };
+}
+
+export function sampleCsv(): string {
+  const rows = borrowers.flatMap((b) =>
+    b.months.map((m) =>
+      [b.id, b.name, b.sector, b.city, b.loan, m.month, m.inflow, m.outflow, m.balance, m.receivables, m.overdueReceivables, m.obligations, m.topCustomerShare].join(","),
+    ),
+  );
+  return [CSV_HEADER, ...rows].join("\n");
+}
+
+// ---------- Pricing / ROI ----------
+export type RoiInput = {
+  borrowers: number;
+  feePerBorrower: number; // ₹ per borrower per month
+  platformFeeYear: number; // ₹ per year
+  avgLoanLakh: number;
+  defaultRate: number; // 0..1 per year
+  earlyCatchRate: number; // share of defaults flagged early, 0..1
+  lossReduction: number; // share of loss avoided when caught early, 0..1
+};
+
+export function roi(i: RoiInput) {
+  const costYear = i.borrowers * i.feePerBorrower * 12 + i.platformFeeYear;
+  const defaults = i.borrowers * i.defaultRate;
+  const savedYear = defaults * i.earlyCatchRate * i.lossReduction * i.avgLoanLakh * 100000;
+  return { costYear, defaults, savedYear, multiple: costYear === 0 ? 0 : savedYear / costYear };
+}
