@@ -135,8 +135,8 @@ export function assess(b: Borrower): Assessment {
   const cfAfter = avg(last3.map(net));
   const cfChange = cfBefore === 0 ? 0 : (cfAfter - cfBefore) / Math.abs(cfBefore);
 
-  const latest = m[m.length - 1];
-  const start = m[0];
+  const latest = m[m.length - 1]!;
+  const start = m[0]!;
   const overdueShareNow = latest.overdueReceivables / latest.receivables;
   const overdueShareStart = start.overdueReceivables / start.receivables;
   const balanceChange = pct(latest.balance, start.balance);
