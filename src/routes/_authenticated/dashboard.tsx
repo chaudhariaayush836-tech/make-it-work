@@ -29,7 +29,7 @@ function Index() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-6xl px-6 py-10">
-        <h1 className="text-3xl font-semibold tracking-tight">Portfolio early warnings</h1>
+        <h1 className="font-serif text-4xl">Portfolio early warnings</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Borrowers ranked by how many risk signals are changing together. The credit team makes the final call.
         </p>
