@@ -5,7 +5,7 @@ import { portfolio, usePortfolio } from "@/lib/portfolio-store";
 import { Header, Label } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/upload")({
+export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
     meta: [
       { title: "Upload borrower data — CashGraph" },
@@ -36,7 +36,7 @@ function Upload() {
     setErrors(r.errors);
     if (r.borrowers.length) {
       portfolio.upload(r.borrowers);
-      if (!r.errors.length) nav({ to: "/" });
+      if (!r.errors.length) nav({ to: "/dashboard" });
     }
   }
 

@@ -19,7 +19,7 @@ export function RiskBadge({ level }: { level: Assessment["level"] }) {
 }
 
 const nav = [
-  { to: "/", label: "Portfolio" },
+  { to: "/dashboard", label: "Portfolio" },
   { to: "/upload", label: "Upload data" },
   { to: "/pricing", label: "Pricing & ROI" },
 ] as const;
@@ -28,7 +28,7 @@ export function Header() {
   return (
     <header className="border-b border-border">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
-        <Link to="/" className="font-mono text-sm font-medium tracking-[0.2em]">CASHGRAPH</Link>
+        <Link to="/dashboard" className="font-mono text-sm font-medium tracking-[0.2em]">CASHGRAPH</Link>
         <nav className="flex gap-5 text-sm">
           {nav.map((n) => (
             <Link key={n.to} to={n.to} className="text-muted-foreground hover:text-foreground" activeProps={{ className: "text-foreground font-medium" }} activeOptions={{ exact: true }}>

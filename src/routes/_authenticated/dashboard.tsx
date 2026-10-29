@@ -3,7 +3,7 @@ import { assess } from "@/lib/cashgraph";
 import { usePortfolio } from "@/lib/portfolio-store";
 import { Header, RiskBadge } from "@/components/RiskBadge";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Portfolio early warnings — CashGraph" },
