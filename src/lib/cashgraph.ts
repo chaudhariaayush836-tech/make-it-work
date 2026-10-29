@@ -135,8 +135,8 @@ export function assess(b: Borrower): Assessment {
   const cfAfter = avg(last3.map(net));
   const cfChange = cfBefore === 0 ? 0 : (cfAfter - cfBefore) / Math.abs(cfBefore);
 
-  const latest = m[m.length - 1];
-  const start = m[0];
+  const latest = m[m.length - 1]!;
+  const start = m[0]!;
   const overdueShareNow = latest.overdueReceivables / latest.receivables;
   const overdueShareStart = start.overdueReceivables / start.receivables;
   const balanceChange = pct(latest.balance, start.balance);
@@ -194,7 +194,7 @@ export function assess(b: Borrower): Assessment {
     cashflow: 22, overdue: 18, liquidity: 20, balance: 14, concentration: 10, debt: 16,
   };
   const hit = signals.filter((s) => s.triggered);
-  const score = hit.reduce((s, x) => s + weights[x.key], 0);
+  const score = hit.reduce((s, x) => s + (weights[x.key] ?? 0), 0);
 
   // Core blueprint rule: cash flow ↓ >20% + overdue ↑ + liquidity < 1 month = high priority
   const coreRule = ["cashflow", "overdue", "liquidity"].every((k) => hit.some((h) => h.key === k));
@@ -222,7 +222,7 @@ export function parseCsv(text: string): { borrowers: Borrower[]; errors: string[
   const lines = text.trim().split(/\r?\n/).filter(Boolean);
   const errors: string[] = [];
   if (lines.length < 2) return { borrowers: [], errors: ["File has no data rows."] };
-  const head = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const head = lines[0]!.split(",").map((h) => h.trim().toLowerCase());
   const need = CSV_HEADER.split(",");
   const missing = need.filter((n) => !head.includes(n));
   if (missing.length) return { borrowers: [], errors: [`Missing columns: ${missing.join(", ")}`] };
@@ -236,12 +236,12 @@ export function parseCsv(text: string): { borrowers: Borrower[]; errors: string[
       errors.push(`Row ${i + 2}: a number is missing or invalid.`);
       return;
     }
-    const id = c[idx("borrower_id")];
+    const id = c[idx("borrower_id")] ?? "";
     if (!map.has(id))
-      map.set(id, { id, name: c[idx("name")] || id, sector: c[idx("sector")], city: c[idx("city")], loan: num("loan_lakh"), months: [] });
+      map.set(id, { id, name: c[idx("name")] || id, sector: c[idx("sector")] ?? "", city: c[idx("city")] ?? "", loan: num("loan_lakh"), months: [] });
     map.get(id)!.months.push({
-      month: c[idx("month")], inflow: nums[0], outflow: nums[1], balance: nums[2], receivables: nums[3],
-      overdueReceivables: nums[4], obligations: nums[5], topCustomerShare: nums[6] > 1 ? nums[6] / 100 : nums[6],
+      month: c[idx("month")] ?? "", inflow: nums[0]!, outflow: nums[1]!, balance: nums[2]!, receivables: nums[3]!,
+      overdueReceivables: nums[4]!, obligations: nums[5]!, topCustomerShare: nums[6]! > 1 ? nums[6]! / 100 : nums[6]!,
     });
   });
   const out: Borrower[] = [];

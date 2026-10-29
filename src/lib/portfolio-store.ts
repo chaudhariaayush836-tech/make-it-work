@@ -58,7 +58,7 @@ export const portfolio = {
     set({ ...state, decisions: { ...state.decisions, [d.borrowerId]: [d, ...(state.decisions[d.borrowerId] ?? [])] } }),
   setOutcome: (id: string, i: number, outcome: Decision["outcome"]) => {
     const list = [...(state.decisions[id] ?? [])];
-    list[i] = { ...list[i], outcome };
+    list[i] = { ...list[i]!, outcome };
     set({ ...state, decisions: { ...state.decisions, [id]: list } });
   },
 };

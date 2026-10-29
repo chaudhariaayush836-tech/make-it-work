@@ -5,7 +5,7 @@ import { portfolio, usePortfolio } from "@/lib/portfolio-store";
 import { Header, Label } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/upload")({
+export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
     meta: [
       { title: "Upload borrower data — CashGraph" },
@@ -36,7 +36,7 @@ function Upload() {
     setErrors(r.errors);
     if (r.borrowers.length) {
       portfolio.upload(r.borrowers);
-      if (!r.errors.length) nav({ to: "/" });
+      if (!r.errors.length) nav({ to: "/dashboard" });
     }
   }
 
@@ -44,7 +44,7 @@ function Upload() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-3xl px-6 py-10">
-        <h1 className="text-3xl font-semibold tracking-tight">Upload borrower data</h1>
+        <h1 className="font-serif text-4xl">Upload borrower data</h1>
         <p className="mt-2 text-muted-foreground">
           For a pilot: export a lender's past monthly figures (one row per borrower per month, at least 4 months) and see who CashGraph would have flagged. Data stays in this browser.
         </p>

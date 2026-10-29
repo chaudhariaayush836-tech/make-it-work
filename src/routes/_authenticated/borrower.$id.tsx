@@ -7,7 +7,7 @@ import { Header, Label, RiskBadge } from "@/components/RiskBadge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/borrower/$id")({
+export const Route = createFileRoute("/_authenticated/borrower/$id")({
   head: () => {
     const t = "Borrower risk review — CashGraph";
     const d = "Risk signals, explanation, suggested action and credit decision for this borrower.";
@@ -41,7 +41,7 @@ function BorrowerPage() {
         <Header />
         <main className="mx-auto max-w-6xl px-6 py-10">
           <p>This borrower isn't in the current portfolio.</p>
-          <Link to="/" className="underline">Back to portfolio</Link>
+          <Link to="/dashboard" className="underline">Back to portfolio</Link>
         </main>
       </div>
     );
@@ -59,10 +59,10 @@ function BorrowerPage() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-6xl px-6 py-10">
-        <Link to="/" className="font-mono text-xs text-muted-foreground hover:text-foreground">← Portfolio</Link>
+        <Link to="/dashboard" className="font-mono text-xs text-muted-foreground hover:text-foreground">← Portfolio</Link>
         <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">{b.name}</h1>
+            <h1 className="font-serif text-4xl">{b.name}</h1>
             <p className="mt-1 text-muted-foreground">{b.sector} · {b.city} · Loan ₹{b.loan} lakh</p>
           </div>
           <div className="flex items-center gap-3">
