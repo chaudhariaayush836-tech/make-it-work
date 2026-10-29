@@ -9,75 +9,73 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as UploadRouteImport } from './routes/upload'
-import { Route as BorrowerIdRouteImport } from './routes/borrower.$id'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
+import { Route as AuthenticatedBorrowerIdRouteImport } from './routes/_authenticated/borrower.$id'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UploadRoute = UploadRouteImport.update({
-  id: '/upload',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/_authenticated/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
+  id: '/_authenticated/upload',
   path: '/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BorrowerIdRoute = BorrowerIdRouteImport.update({
-  id: '/borrower/$id',
+const AuthenticatedBorrowerIdRoute = AuthenticatedBorrowerIdRouteImport.update({
+  id: '/_authenticated/borrower/$id',
   path: '/borrower/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
-  '/upload': typeof UploadRoute
-  '/borrower/$id': typeof BorrowerIdRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload': typeof AuthenticatedUploadRoute
+  '/borrower/$id': typeof AuthenticatedBorrowerIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
-  '/upload': typeof UploadRoute
-  '/borrower/$id': typeof BorrowerIdRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload': typeof AuthenticatedUploadRoute
+  '/borrower/$id': typeof AuthenticatedBorrowerIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/pricing': typeof PricingRoute
-  '/upload': typeof UploadRoute
-  '/borrower/$id': typeof BorrowerIdRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/upload': typeof AuthenticatedUploadRoute
+  '/_authenticated/borrower/$id': typeof AuthenticatedBorrowerIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/pricing' | '/upload' | '/borrower/$id'
+  fullPaths: '/pricing' | '/dashboard' | '/upload' | '/borrower/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/pricing' | '/upload' | '/borrower/$id'
-  id: '__root__' | '/' | '/pricing' | '/upload' | '/borrower/$id'
+  to: '/pricing' | '/dashboard' | '/upload' | '/borrower/$id'
+  id:
+    | '__root__'
+    | '/pricing'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/upload'
+    | '/_authenticated/borrower/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   PricingRoute: typeof PricingRoute
-  UploadRoute: typeof UploadRoute
-  BorrowerIdRoute: typeof BorrowerIdRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
+  AuthenticatedBorrowerIdRoute: typeof AuthenticatedBorrowerIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/pricing': {
       id: '/pricing'
       path: '/pricing'
@@ -85,28 +83,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/upload': {
-      id: '/upload'
-      path: '/upload'
-      fullPath: '/upload'
-      preLoaderRoute: typeof UploadRouteImport
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/borrower/$id': {
-      id: '/borrower/$id'
+    '/_authenticated/upload': {
+      id: '/_authenticated/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/borrower/$id': {
+      id: '/_authenticated/borrower/$id'
       path: '/borrower/$id'
       fullPath: '/borrower/$id'
-      preLoaderRoute: typeof BorrowerIdRouteImport
+      preLoaderRoute: typeof AuthenticatedBorrowerIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   PricingRoute: PricingRoute,
-  UploadRoute: UploadRoute,
-  BorrowerIdRoute: BorrowerIdRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedUploadRoute: AuthenticatedUploadRoute,
+  AuthenticatedBorrowerIdRoute: AuthenticatedBorrowerIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
