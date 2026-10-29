@@ -73,7 +73,7 @@ function Index() {
                     </Link>
                     <div className="text-xs text-muted-foreground">
                       {b.sector} · {b.city}
-                      {decisions[b.id]?.length ? ` · Reviewed: ${decisions[b.id][0].action}` : ""}
+                      {decisions[b.id]?.length ? ` · Reviewed: ${decisions[b.id]![0]!.action}` : ""}
                     </div>
                   </td>
                   <td className="px-4 py-4"><RiskBadge level={a.level} /></td>

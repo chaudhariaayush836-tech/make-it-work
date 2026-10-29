@@ -240,8 +240,8 @@ export function parseCsv(text: string): { borrowers: Borrower[]; errors: string[
     if (!map.has(id))
       map.set(id, { id, name: c[idx("name")] || id, sector: c[idx("sector")], city: c[idx("city")], loan: num("loan_lakh"), months: [] });
     map.get(id)!.months.push({
-      month: c[idx("month")], inflow: nums[0], outflow: nums[1], balance: nums[2], receivables: nums[3],
-      overdueReceivables: nums[4], obligations: nums[5], topCustomerShare: nums[6] > 1 ? nums[6] / 100 : nums[6],
+      month: c[idx("month")], inflow: nums[0]!, outflow: nums[1]!, balance: nums[2]!, receivables: nums[3]!,
+      overdueReceivables: nums[4]!, obligations: nums[5]!, topCustomerShare: nums[6]! > 1 ? nums[6]! / 100 : nums[6]!,
     });
   });
   const out: Borrower[] = [];
